@@ -20,12 +20,14 @@ public class GameManager : MonoBehaviour
     public int[] scores = new int[3];
     public TextMeshProUGUI[] scoreTxt;
     public TextMeshProUGUI gameOverTxt;
+    public BallBehavior bb;
 
     private void Start()
     {
         throwAnim = throwDir.GetComponent<Animator>();
         rb = ball.GetComponent<Rigidbody>();
         startPos = ball.transform.position;
+        bb = ball.GetComponent<BallBehavior>();
     }
     private void Update()
     {
@@ -51,8 +53,6 @@ public class GameManager : MonoBehaviour
 
     private void Positioning()
     {
-        
-        Debug.Log("Positioning");
         if(Input.GetKey(KeyCode.A))
         {
             ball.transform.position = new Vector3(Mathf.Clamp(ball.transform.position.x + positionSpd, 10.8f, 11.8f), startPos.y, startPos.z);
@@ -70,7 +70,6 @@ public class GameManager : MonoBehaviour
     }
     private void Rotation()
     {
-        Debug.Log("Rotating");
         throwAnim.SetBool("Aiming", true);
         ball.transform.position = freezePos;
         ball.transform.rotation = Quaternion.identity;
@@ -84,7 +83,6 @@ public class GameManager : MonoBehaviour
     }
     IEnumerator Throw(Quaternion r)
     {
-        Debug.Log("Throw");
         ball.transform.rotation = r;
         yield return new WaitForSeconds(.3f);
         rb.isKinematic = false;
@@ -92,12 +90,12 @@ public class GameManager : MonoBehaviour
         ballCam.gameObject.SetActive(true);
         startCam.gameObject.SetActive(false);
         rb.AddForce(ball.transform.forward * -throwSpd);
+        StartCoroutine(bb.PlaySound(0, true));
         yield return null;
     }
 
     public IEnumerator PinCheck()
     {
-        Debug.Log("Pin Check");
         ballCam.gameObject.SetActive(false);
         PinCam.gameObject.SetActive(true);
         yield return new WaitForSeconds(3);
@@ -130,6 +128,7 @@ public class GameManager : MonoBehaviour
         throwAnim.enabled = true;
         throwAnim.SetBool("Aiming", false);
         throwDir.transform.rotation = Quaternion.identity;
+        bb.isRunning = false;
         if(scores[0] == 10)
         {
             level = 2;
