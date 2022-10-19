@@ -21,6 +21,7 @@ public class BallBehavior: MonoBehaviour
     {
         if(collision.gameObject.tag == "Cam Change")
         {
+            a.Stop();
             Debug.Log("ball reached pins");
             StartCoroutine(gm.PinCheck());
         }

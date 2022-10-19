@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -21,6 +22,7 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI[] scoreTxt;
     public TextMeshProUGUI gameOverTxt;
     public BallBehavior bb;
+    public GameObject replayButton;
 
     private void Start()
     {
@@ -28,6 +30,7 @@ public class GameManager : MonoBehaviour
         rb = ball.GetComponent<Rigidbody>();
         startPos = ball.transform.position;
         bb = ball.GetComponent<BallBehavior>();
+        replayButton.SetActive(false);
     }
     private void Update()
     {
@@ -47,12 +50,14 @@ public class GameManager : MonoBehaviour
         {
             var s = scores[0] + scores[1];
             scoreTxt[2].text = s.ToString();
+            replayButton.SetActive(true);
         }
         
     }
 
     private void Positioning()
     {
+        throwDir.transform.position = ball.transform.position;
         if(Input.GetKey(KeyCode.A))
         {
             ball.transform.position = new Vector3(Mathf.Clamp(ball.transform.position.x + positionSpd, 10.8f, 11.8f), startPos.y, startPos.z);
@@ -127,7 +132,7 @@ public class GameManager : MonoBehaviour
         throwDir.SetActive(true);
         throwAnim.enabled = true;
         throwAnim.SetBool("Aiming", false);
-        throwDir.transform.rotation = Quaternion.identity;
+        throwDir.transform.rotation = Quaternion.Euler(0, 0, 0);
         bb.isRunning = false;
         if(scores[0] == 10)
         {
@@ -149,5 +154,10 @@ public class GameManager : MonoBehaviour
     private void GameOverText(string s)
     {
         gameOverTxt.text = s;
+    }
+
+    public void ReplayButton()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
